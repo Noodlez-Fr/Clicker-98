@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Clicker '98 - Ultimate Cursor Smasher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=MS+Sans+Serif&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        height: 100vh;
+        font-family: 'MS Sans Serif', Tahoma, Geneva, Verdana, sans-serif;
+        background: #008080;
+        color: #000080;
+        overflow: hidden;
+        image-rendering: pixelated;
+    }
+
+    .window {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 640px;
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #000 #000 #dfdfdf;
+        box-shadow: 4px 4px 0 #000;
+    }
+
+    .title-bar {
+        background: linear-gradient(to right, #000080, #1084d0);
+        color: white;
+        padding: 3px 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .title-bar-buttons {
+        display: flex;
+        gap: 2px;
+    }
+
+    .btn-win {
+        width: 22px;
+        height: 20px;
+        background: #c0c0c0;
+        border: 1px solid;
+        border-color: #fff #000 #000 #fff;
+        font-size: 10px;
+        line-height: 14px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btn-win:active {
+        border-color: #000 #fff #fff #000;
+        background: #c0c0c0;
+    }
+
+    .content {
+        padding: 16px;
+        background: #c0c0c0;
+        border-top: 1px solid #808080;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .score-area {
+        background: #000080;
+        color: #ffffff;
+        padding: 12px 16px;
+        border: 2px inset #ffffff;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        text-shadow: 2px 2px 0 #000;
+    }
+
+    .big-button {
+        width: 100%;
+        height: 220px;
+        background: #c0c0c0;
+        border: 6px outset #ffffff;
+        font-size: 72px;
+        font-family: 'MS Sans Serif', sans-serif;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.08s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset -4px -4px 0 #808080;
+    }
+
+    .big-button:active {
+        border-style: inset;
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
+    .controls {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        background: #c0c0c0;
+        border: 2px outset #ffffff;
+        font-family: 'MS Sans Serif', sans-serif;
+        cursor: pointer;
+    }
+
+    .btn:active {
+        border-style: inset;
+    }
+
+    .stats {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .status-bar {
+        height: 24px;
+        background: #c0c0c0;
+        border-top: 1px solid #808080;
+        padding: 3px 8px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* Upgrade Dialog */
+    .dialog-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+    }
+
+    .dialog {
+        width: 420px;
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #000 #000 #dfdfdf;
+        box-shadow: 4px 4px 0 #000;
+    }
+
+    .dialog-title {
+        background: linear-gradient(to right, #000080, #1084d0);
+        color: white;
+        padding: 3px 8px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .dialog-content {
+        padding: 16px;
+        background: #c0c0c0;
+    }
+
+    .upgrade-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .upgrade-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        background: #ffffff;
+        border: 2px inset #808080;
+    }
+
+    .upgrade-info {
+        flex: 1;
+    }
+
+    .upgrade-name {
+        font-weight: bold;
+    }
+
+    .upgrade-desc {
+        font-size: 11px;
+        color: #000080;
+    }
+
+    .upgrade-btn {
+        padding: 4px 12px;
+        background: #c0c0c0;
+        border: 2px outset #ffffff;
+        cursor: pointer;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .upgrade-btn:disabled {
+        color: #808080;
+        border-color: #808080 #c0c0c0 #c0c0c0 #808080;
+        background: #c0c0c0;
+    }
+
+    .dialog-buttons {
+        text-align: right;
+        padding: 0 16px 12px;
+    }
+
+    .cursor-pointer {
+        cursor: url('https://cur.cursors-4u.net/nature/nat-10/nat924.cur'), auto;
+    }
+</style>
+</head>
+<body class="cursor-pointer">
+
+<div class="window">
+    <div class="title-bar">
+        <span>Clicker '98 - Click furiously to win!</span>
+        <div class="title-bar-buttons">
+            <div class="btn-win">_</div>
+            <div class="btn-win">□</div>
+            <div class="btn-win">×</div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="score-area" id="score">0 Clicks</div>
+        
+        <div class="big-button" id="clicker">CLICK ME!</div>
+
+        <div class="controls">
+            <button class="btn" id="upgradesBtn">Upgrades</button>
+        </div>
+
+        <div class="stats">
+            Clicks per second: <span id="cps">0.0</span><br>
+            Total clicks ever: <span id="total">0</span><br>
+            You are currently: <span id="rank">Clicking Newbie</span>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        Ready • Clicks: <span id="status-score">0</span> • v1.0.0 • ©1998 ClickMaster Corp.
+    </div>
+</div>
+
+<!-- Upgrade Dialog -->
+<div class="dialog-overlay" id="upgradeDialog" style="display: none;">
+    <div class="dialog">
+        <div class="dialog-title">Upgrade Shop - Spend your hard-earned clicks!</div>
+        <div class="dialog-content">
+            <div class="upgrade-list" id="upgradeList"></div>
+            <div class="dialog-buttons">
+                <button class="btn" id="closeDialog">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const scoreDisplay = document.getElementById('score');
+const totalDisplay = document.getElementById('total');
+const cpsDisplay = document.getElementById('cps');
+const rankDisplay = document.getElementById('rank');
+const statusScore = document.getElementById('status-score');
+const clicker = document.getElementById('clicker');
+const upgradesBtn = document.getElementById('upgradesBtn');
+const upgradeDialog = document.getElementById('upgradeDialog');
+const upgradeList = document.getElementById('upgradeList');
+const closeDialog = document.getElementById('closeDialog');
+
+let score = 0;
+let totalClicks = 0;
+let lastTime = performance.now();
+let clicksThisSecond = 0;
+let autoClicksPerSecond = 0;
+
+const ranks = [
+    {score: 0, name: "Clicking Newbie"},
+    {score: 100, name: "Click Trainee"},
+    {score: 500, name: "Click Enthusiast"},
+    {score: 2000, name: "Certified Clicker"},
+    {score: 7500, name: "Click Lord"},
+    {score: 25000, name: "Grandmaster of Clicks"},
+    {score: 100000, name: "Click Messiah"},
+    {score: 500000, name: "CLICK SUPREME BEING"}
+];
+
+const upgrades = [
+    {
+        id: "cursor1",
+        name: "Better Mouse",
+        desc: "Doubles click power",
+        baseCost: 50,
+        costGrowth: 1.8,
+        level: 0,
+        effect: () => { clickPower *= 2; }
+    },
+    {
+        id: "auto1",
+        name: "Auto-Clicker v1.0",
+        desc: "+1 click per second",
+        baseCost: 80,
+        costGrowth: 1.6,
+        level: 0,
+        effect: () => { autoClicksPerSecond += 1; }
+    },
+    {
+        id: "cursor2",
+        name: "Golden Cursor",
+        desc: "Triples click power",
+        baseCost: 400,
+        costGrowth: 2.0,
+        level: 0,
+        effect: () => { clickPower *= 3; }
+    },
+    {
+        id: "auto2",
+        name: "Turbo Auto-Clicker",
+        desc: "+8 clicks per second",
+        baseCost: 1200,
+        costGrowth: 1.7,
+        level: 0,
+        effect: () => { autoClicksPerSecond += 8; }
+    }
+];
+
+let clickPower = 1;
+
+// Click handling
+function click() {
+    score += clickPower;
+    totalClicks += clickPower;
+    clicksThisSecond += clickPower;
+    
+    scoreDisplay.textContent = Math.floor(score).toLocaleString() + " Clicks";
+    totalDisplay.textContent = Math.floor(totalClicks).toLocaleString();
+    statusScore.textContent = Math.floor(score).toLocaleString();
+    
+    updateRank();
+}
+
+clicker.addEventListener('click', click);
+clicker.addEventListener('mousedown', () => {
+    click();
+    const interval = setInterval(click, 80);
+    const up = () => {
+        clearInterval(interval);
+        document.removeEventListener('mouseup', up);
+        document.removeEventListener('mouseleave', up);
+    };
+    document.addEventListener('mouseup', up);
+    document.addEventListener('mouseleave', up);
+});
+
+// Auto-clicker loop
+setInterval(() => {
+    if (autoClicksPerSecond > 0) {
+        score += autoClicksPerSecond;
+        totalClicks += autoClicksPerSecond;
+        clicksThisSecond += autoClicksPerSecond;
+        scoreDisplay.textContent = Math.floor(score).toLocaleString() + " Clicks";
+        totalDisplay.textContent = Math.floor(totalClicks).toLocaleString();
+        statusScore.textContent = Math.floor(score).toLocaleString();
+        updateRank();
+    }
+}, 1000);
+
+// Rank update
+function updateRank() {
+    let currentRank = ranks[0];
+    for (let rank of ranks) {
+        if (score >= rank.score) currentRank = rank;
+        else break;
+    }
+    rankDisplay.textContent = currentRank.name;
+}
+
+// CPS counter
+function updateCPS() {
+    const now = performance.now();
+    const delta = (now - lastTime) / 1000;
+    
+    if (delta >= 1) {
+        cpsDisplay.textContent = (clicksThisSecond + autoClicksPerSecond).toFixed(1);
+        clicksThisSecond = 0;
+        lastTime = now;
+    }
+    
+    requestAnimationFrame(updateCPS);
+}
+requestAnimationFrame(updateCPS);
+
+// Upgrade Dialog
+function renderUpgrades() {
+    upgradeList.innerHTML = '';
+    upgrades.forEach(upgrade => {
+        const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costGrowth, upgrade.level));
+        const item = document.createElement('div');
+        item.className = 'upgrade-item';
+        item.innerHTML = `
+            <div class="upgrade-info">
+                <div class="upgrade-name">${upgrade.name} (${upgrade.level})</div>
+                <div class="upgrade-desc">${upgrade.desc}</div>
+                <div>Cost: ${cost.toLocaleString()} clicks</div>
+            </div>
+            <button class="upgrade-btn" 
+                ${score < cost ? 'disabled' : ''}>
+                Buy
+            </button>
+        `;
+        
+        item.querySelector('.upgrade-btn').addEventListener('click', () => {
+            if (score >= cost) {
+                score -= cost;
+                upgrade.level++;
+                upgrade.effect();
+                scoreDisplay.textContent = Math.floor(score).toLocaleString() + " Clicks";
+                totalDisplay.textContent = Math.floor(totalClicks).toLocaleString();
+                statusScore.textContent = Math.floor(score).toLocaleString();
+                renderUpgrades(); // Refresh list
+            }
+        });
+        
+        upgradeList.appendChild(item);
+    });
+}
+
+upgradesBtn.addEventListener('click', () => {
+    renderUpgrades();
+    upgradeDialog.style.display = 'flex';
+});
+
+closeDialog.addEventListener('click', () => {
+    upgradeDialog.style.display = 'none';
+});
+
+upgradeDialog.addEventListener('click', (e) => {
+    if (e.target === upgradeDialog) {
+        upgradeDialog.style.display = 'none';
+    }
+});
+</script>
+</body>
+</html>
